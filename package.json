@@ -10,7 +10,6 @@
   "dependencies": {
     "@supabase/supabase-js": "2.38.2",
     "openai": "4.12.3",
-    "vite": "latest"
-  },
-  "devDependencies": {}
+    "vite": "^7.3.1"
+  }
 }
