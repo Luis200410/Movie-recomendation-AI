@@ -1,2 +1,10 @@
-.env
+
 node_modules
+
+# Ignore build files
+dist/
+dist-ssr/
+
+# Ignore Environment Variables (CRITICAL)
+.env
+.env.local
