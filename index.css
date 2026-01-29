@@ -39,23 +39,15 @@ textarea{
     background-color: #3B4877;
     color: white;
     resize: none;
-    padding: 1em;
+    padding: 1em 1em;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 14px;
-    margin-bottom: 1em;
+    margin-top: 1em;
 }
 
-textarea::placeholder{
-    color: #05060C;
-    position: absolute;
-    padding: 1em;
-    top: 0;
-    left: 0;
-}
+/* users form style */
 
-label{
-    margin-bottom: 0.5em;
-}
+
 
 .form{
     display: flex;
@@ -65,12 +57,58 @@ label{
     height: 524px;
     width: 330px;
     margin: 0 auto 100px auto;
-
 }
 
-.favorite, .mood, .type{
+input[type='radio']{
+    opacity: 0;          /* Make it see-through */
+    position: absolute;  /* Take it out of the layout flow */
+    width: 0;            /* Shrink it */
+    height: 0;
+    pointer-events: none;
+}
+
+.moodContainer, .typeContainer{
     display: flex;
-    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 1em 0;
+    width: 300px;
+}
+
+.moodContainer label, .typeContainer label{
+    background-color: #3B4877;
+    display: inline-block;
+    font-size: 14px;
+    border-radius: 5px;
+    width: fit-content;
+    padding: 0.5em 1em;
+    cursor: pointer;
+}
+
+
+.moodContainer div:has(input:checked) label,
+.typeContainer div:has(input:checked) label {
+    
+    /* 2. Apply your Active Styles */
+    box-shadow: 0 0px 2px rgb(255, 255, 255); 
+    border: 1px solid white;
+    color: white;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+
+.favorite, .island {
+    margin-top: 1em;
+}
+
+
+textarea::placeholder{
+    color: #05060C;
+    position: absolute;
+    padding: 1em; 
+    top: 0;
+    left: 0;
+
 }
 
 button{
@@ -102,4 +140,31 @@ button{
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+}
+
+.people{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input{
+    text-align: center;
+    height: 50px;
+    background-color: #3B4877;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 1em;
+    width: 325px;
+    font-size: 20px;
+}
+
+input::placeholder{
+    font-size: 20px;
+    color: #05060C;
+}
+
+.people button{
+    margin-top: 0;
 }

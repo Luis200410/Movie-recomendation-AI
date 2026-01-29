@@ -1,24 +1,124 @@
+
 import { openai, supabase } from './config.js';
 
-const form = document.getElementById('form')
+const peopleForm = document.getElementById('people')
+const numPeople =  document.getElementById('number')
+const time =  document.getElementById('time')
+const userForms = document.getElementById('userForms')
+
+peopleForm.addEventListener('submit', function(e){
+    e.preventDefault()
+    peopleForm.style.display = ' none'
+    assigner()
+})
+
+
+let currentUserIndex = 0 
+let totalUsers = 0 
+let allAnswers = []
+
 const reply = document.getElementById('reply')
 
-const favorite = document.getElementById('favorite')
-const mood = document.getElementById('mood')
-const type = document.getElementById('type')
-
-form.style.display = 'block'
 reply.style.display = 'none'
 
+function assigner(){
+    totalUsers = parseInt(numPeople.value)
+    currentUserIndex = 0
+    allAnswers = []
+    renderCurrentForm()
+}
 
+function renderCurrentForm(){
 
-const query = favorite + " " + mood + " " + type
+    userForms.innerHTML = ""
 
-form.addEventListener('submit', function(e){
+    if(currentUserIndex >= totalUsers){
+        return
+    }
+
+    const title = document.getElementById('title')
+    title.textContent = `${currentUserIndex + 1} of ${totalUsers}`
+
+    const buttonText = (currentUserIndex === totalUsers -1) ? "Next Person" : "Get Movie"
+
+        userForms.innerHTML += `
+                <form id="form" class="form">
+                    <div class="favorite"> 
+                        <label for="favorite">What’s your favorite movie and why?</label>
+                        <textarea id="favorite" type="text" placeholder="The Shawshank Redemption Because it taught me to never give up hope no matter how hard life gets" required></textarea>
+                    </div>
+                    <div >
+                        <div>
+                            <p>Are you in the mood of something classic?</p>
+                            <div class="moodContainer">
+                                <div>
+                                    <label for="new">New</label>
+                                    <input type="radio" name="mood" value="new" id="new" required/>
+                                </div>
+                                <div>
+                                    <label for="classic">Classic</label>
+                                    <input type="radio" name="mood" value="classic"id="classic" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p>What are you in the mood for?</p>
+                        <div class="typeContainer"> 
+                            <div>
+                                <label for="fun">Fun</label>
+                                <input type="radio" name="type" value="fun"  id="fun" required/>
+                            </div>
+                            <div>
+                                    <label for="serious">Serious</label>
+                                <input type="radio" name="type" value="serious" id="serious" />
+                            </div>
+                            <div>
+                                    <label for="inspiring">Inspiring</label>
+                                <input type="radio" name="type" value="inspiring"  id="inspiring" />
+                            </div>
+                            <div>
+                                <label for="scary">Scary</label>
+                                <input type="radio" name="type" value="scary" id="scary" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="island"> 
+                        <label for="island">Which famous film person would you love to be stranded on an island with and why?</label>
+                        <textarea id="island" type="text" placeholder="Tom Hanks because he is really funny and can do the voice of Woody" required></textarea>
+                    </div>
+                    <button type="submit" id="submit">${buttonText}</button>
+                </form>
+            </div>
+            `
+
+            document.getElementById('form').addEventListener('submit', handleNextClick)
+}
+
+function handleNextClick(e){
     e.preventDefault()
-    const query = `${favorite.value} ${mood.value} ${type.value}`
-    main(query)
-})
+    const favorite = document.getElementById('favorite').value
+    const mood = document.querySelector('input[name="mood"]:checked').value
+    const type = document.querySelector('input[name="type"]:checked').value
+    const island = document.getElementById('island').value
+
+    console.log(favorite, mood, type, island)
+
+    allAnswers.push({
+        user: currentUserIndex + 1,
+        favoriteUser: favorite,
+        moodUser: mood,
+        typeUser: type,
+        islandUser: island
+    })
+
+    console.log(allAnswers)
+
+    currentUserIndex++
+
+    renderCurrentForm()
+}
+
 
 async function main(query){
     const embedCreated = await embedCreate(query)
