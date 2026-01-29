@@ -10,10 +10,27 @@
     <title>PopChoice</title>
 </head>
 <body>
-    <section id="first" class="first">
+    <header class="header">
+        <img src="./images/logo.png" alt="PopChoice Icon" />
         <h1>PopChoice</h1>
-    </section>
-
+    </header>
+    <form id="form" class="form">
+        <div class="favorite"> 
+            <label for="favorite">What’s your favorite movie and why?</label>
+            <textarea id="favorite" type="text" placeholder="The Shawshank Redemption Because it taught me to never give up hope no matter how hard life gets"></textarea>
+        </div>
+        <div class="mood"> 
+            <label for="mood">Are you in the mood for something
+                new or a classic?</label>
+            <textarea id="mood" type="text" placeholder="I want to watch movies that were released after 1990"></textarea>
+        </div>
+        <div class="type"> 
+            <label for="type">Do you wanna have fun or do you want something serious?</label>
+            <textarea id="type" type="text" placeholder="I want to watch something stupid and fun"></textarea>
+        </div>
+        <button type="submit" id="submit">Let's Go</button>
+    </form>
+    <section id="reply" class="reply"></section>
     <script type="module" src="index.js"></script>
 </body>
 </html>
