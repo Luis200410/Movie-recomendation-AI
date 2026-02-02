@@ -1,5 +1,5 @@
 
-import { openai, supabase } from './config.js';
+import { openai, supabase, moviesAPI} from './config.js';
 
 const peopleForm = document.getElementById('people')
 const numPeople =  document.getElementById('number')
@@ -33,13 +33,14 @@ function renderCurrentForm(){
     userForms.innerHTML = ""
 
     if(currentUserIndex >= totalUsers){
+        checkAnswers()
         return
     }
 
     const title = document.getElementById('title')
     title.textContent = `${currentUserIndex + 1} of ${totalUsers}`
 
-    const buttonText = (currentUserIndex === totalUsers -1) ? "Next Person" : "Get Movie"
+    const buttonText = (currentUserIndex === totalUsers -1) ? "Get Movie" : "Next Person"
 
         userForms.innerHTML += `
                 <form id="form" class="form">
@@ -112,11 +113,20 @@ function handleNextClick(e){
         islandUser: island
     })
 
-    console.log(allAnswers)
-
     currentUserIndex++
 
     renderCurrentForm()
+}
+
+function checkAnswers(){
+    allAnswers.map(prompt => {
+        console.log(prompt)
+        const query = `${prompt.user} ${prompt.favoriteUser} ${prompt.moodUser} ${prompt.typeUser} ${prompt.islandUser}`
+        console.log(query)
+        main(query)
+    })
+    console.log(allAnswers)
+    
 }
 
 
@@ -152,18 +162,20 @@ const message = [{
     Your main job is to formulate a short answer to the question using the provided context.
     
     IMPORTANT: You must return the answer in this exact format:
-    Movie Title (Year) :: Description
+    Movie Title :: (year) Description
 
     Example:
-    The Matrix (1999) :: A mind-bending sci-fi thriller about a computer hacker...`
+    The Matrix :: (1999) A mind-bending sci-fi thriller about a computer hacker...`
 }]
+
+let answers = []
 
 async function recommend(match, query){
 
     const context = match.map(movie => movie.content).join('\n---\n')
     message.push({
         role: 'user',
-        content: `context: ${context}, question: ${query}`
+        content: `context: ${context}, question: ${query}, time: ${time}`
     })
 
     const response = await openai.chat.completions.create({
@@ -171,23 +183,34 @@ async function recommend(match, query){
     messages: message
     });
 
-    form.style.display = 'none'
     reply.style.display = 'flex'
     
-
     const responseText = response.choices[0].message.content
-    console.log(responseText)
     const splitData = responseText.split(' :: ')
-     console.log(splitData)
     const title = splitData[0] || "Recommendation"
-     console.log(title)
     const description = splitData[1] || responseText
-     console.log(description)
-    reply.innerHTML = `
-        <h2>${title}</h2>
-        <p>${description}</p>
-        <button id='again' onclick='location.reload()'>Go Again</button>
-    `
+
+    const movieAI =  {
+        titleAI: title, 
+        descriptionAI: description
+    }
+
+    answers.push(movieAI)
+    fetchPosterAndRender()
+
 }
 
-
+async function fetchPosterAndRender(){
+    if (answers.length >= 1){
+        for (let answer of answers){
+            const responseMovie = await fetch(`http://www.omdbapi.com/?apikey=${moviesAPI}&t=${answer.titleAI}`)
+            const dataMovie = await responseMovie.json()
+            reply.innerHTML = `
+                <h1>${dataMovie.Title} (${dataMovie.Year})</h1>
+                <img src=${dataMovie.Poster} alt="Poster of the movie" />
+                <p>${answer.descriptionAI}</p>
+                <button>Next Movie</button>
+            `
+        }
+    }
+}
