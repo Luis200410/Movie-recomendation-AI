@@ -5,6 +5,7 @@ const peopleForm = document.getElementById('people')
 const numPeople =  document.getElementById('number')
 const time =  document.getElementById('time')
 const userForms = document.getElementById('userForms')
+const header = document.getElementById('header')
 
 peopleForm.addEventListener('submit', function(e){
     e.preventDefault()
@@ -197,20 +198,54 @@ async function recommend(match, query){
 
     answers.push(movieAI)
     fetchPosterAndRender()
-
 }
 
+let answerIndex = 0 
+
 async function fetchPosterAndRender(){
-    if (answers.length >= 1){
-        for (let answer of answers){
-            const responseMovie = await fetch(`http://www.omdbapi.com/?apikey=${moviesAPI}&t=${answer.titleAI}`)
-            const dataMovie = await responseMovie.json()
+
+    if (answerIndex >= answers.length){
+        return 
+    }
+
+    let currentAnswerIndex = answers[answerIndex]
+
+    try{
+        const responseMovie = await fetch(`http://www.omdbapi.com/?apikey=${moviesAPI}&t=${currentAnswerIndex.titleAI}`)
+        const dataMovie = await responseMovie.json()
+        console.log(responseMovie)
+
+        const buttonAnswer = answerIndex === answers.length - 1 ? 'Start Over' : 'Next Recommendation'
             reply.innerHTML = `
                 <h1>${dataMovie.Title} (${dataMovie.Year})</h1>
                 <img src=${dataMovie.Poster} alt="Poster of the movie" />
-                <p>${answer.descriptionAI}</p>
-                <button>Next Movie</button>
+                <p>${currentAnswerIndex.descriptionAI}</p>
+                <button id="next-answer">${buttonAnswer}</button>
             `
+
+            document.getElementById('next-answer').addEventListener('click', ()=>{
+                if (answerIndex === answers.length - 1) {
+                    resetApp() 
+                } else {
+                    answerIndex++
+                    fetchPosterAndRender()
+                }
+            })
         }
+    catch (err){
+        console.error('The error is:', err)
     }
+}
+
+function resetApp() {
+    currentUserIndex = 0 
+    totalUsers = 0 
+    answerIndex = 0
+    
+    allAnswers = [] 
+    reply.innerHTML = ""             
+    reply.style.display = 'none'    
+    userForms.innerHTML = ""         
+    peopleForm.style.display = 'block'     
+    document.getElementById('number').value = "" 
 }
